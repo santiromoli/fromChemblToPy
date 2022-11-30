@@ -6,6 +6,7 @@
 from chembl_webresource_client.new_client import new_client
 import pandas as pd
 import scipy.io
+import numpy as np
 
 # activity API
 activities = new_client.activity.filter(target_chembl_id__in = ['CHEMBL1824'], pchembl_value__isnull = False, 
