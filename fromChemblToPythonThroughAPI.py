@@ -4,11 +4,10 @@
 from chembl_webresource_client.new_client import new_client
 import pandas as pd
 #activity API:
-activities = new_client.activity.filter(target_chembl_id__in = ['CHEMBL1824']
-                                       ).filter(standard_type = "IC50"
-                                        , IC50_value__lte = 10000              
-                                        , assay_type = 'B'                     #Only look for Binding Assays
-                                       ).only(['molecule_chembl_id', 'ic50_value'])
+activities = new_client.activity.filter(target_chembl_id__in = ['CHEMBL1824'], pchembl_value__isnull = False, 
+                                        standard_type = "IC50", standard_units = 'nM', IC50_value__lte = 10000, 
+                                        standar_relation__iexact = '=', assay_type = 'B'
+                                        ).only(['molecule_chembl_id', 'ic50_value'])
 act_df = pd.DataFrame(activities)
 ic50_values_df = act_df[['molecule_chembl_id','value']]
 #find the list of compounds that are within the act_df dataframe:
