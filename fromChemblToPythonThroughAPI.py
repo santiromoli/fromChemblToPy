@@ -24,6 +24,8 @@ mol_df['cx_most_bpka'] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'm
 mol_df['hba'] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x['hba'])
 mol_df['hbd'] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x['hbd'])
 mol_df['psa'] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x['psa'])
+mol_df['cx_logd'] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x['cx_logd'])
+mol_df['cx_logp'] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x['cx_logp'])
 # post-processing: as you wish
 
 # original code from: https://github.com/chembl/notebooks/blob/main/ChEMBL_API_example_for_webinar.ipynb
