@@ -25,7 +25,7 @@ mol_df = pd.DataFrame(molecules)
 
 # convert nested cells (ie those containing a dictionary) to individual columns in the dataframe
 ligands = ['qed_weighted', 'hba', 'hbd', 'psa',
-           'cx_logd', 'cx_logp', 'cx_most_apka', 'cx_most_bpka']
+           'cx_most_apka', 'cx_most_bpka']
 mat = {}
 num = lambda s: np.nan if s is None else float(s)
 for lig in ligands:
