@@ -1,6 +1,7 @@
-# This script gets information from the ChEMBL API. First, we collect all compounds that binds (or not) to CHEMBL1824, and its IC50.
-# Then, we collect some properties of the ligands, such as "qed_weighted", "cx_most_apka", "cx_most_bpka", "hba", "hbd", "psa".
-# original code from: https://github.com/chembl/notebooks/blob/main/ChEMBL_API_example_for_webinar.ipynb
+# This script gets information from the ChEMBL API. In this second implementation we will add to the training datasets the information
+# of the test ligand, TAS-120, in order to compare the predictions. So, we only have to add four targets (FGFR1-4) that are binded by TAS-120,
+# taking care not to include among them the TAS-120.
+# Please, take notice that you have to install the API client first:
 # >> pip install chembl-webresource-client
 
 from chembl_webresource_client.new_client import new_client
@@ -9,8 +10,8 @@ import scipy.io
 import numpy as np
 
 tasks = [('CHEMBL1868', 'VEGFR1'), ('CHEMBL3712907', 'TMIGD3'), ('CHEMBL278', 'ITGA4'), ('CHEMBL4718', 'MNKI'),
-         ('CHEMBL3130', 'PIK3CD'), ('CHEMBL5568', 'ROS1'),      ('CHEMBL3594', 'CA9'),  ('CHEMBL268', 'CTSK'), 
-         ('CHEMBL1824', 'erb2B')]
+         ('CHEMBL3130', 'PIK3CD'), ('CHEMBL5568', 'ROS1'), ('CHEMBL3594', 'CA9'), ('CHEMBL268', 'CTSK'), 
+         ('CHEMBL1824', 'erb2B'), ('CHEMBL3650', 'FGFR1'), ('CHEMBL4142', 'FGFR2'), ('CHEMBL2742', 'FGFR3'), ('CHEMBL3973', 'FGFR4')]
 
 for chembl,nam in tasks:
     # query activity API
@@ -19,6 +20,7 @@ for chembl,nam in tasks:
                                             standar_relation__iexact = '=', assay_type = 'B'
                                             ).only(['molecule_chembl_id', 'ic50_value'])
     act_df = pd.DataFrame(activities)
+    act_df = act_df.query("molecule_chembl_id == 'CHEMBL3701238'") #Since the API does not support the attribute 'exclude'
     ic50_values_df = act_df[['molecule_chembl_id','value']]
 
     # find the list of compounds that are within the act_df dataframe
@@ -36,6 +38,6 @@ for chembl,nam in tasks:
     for lig in ligands:
         mol_df[lig] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x[lig])
         mat[lig] = np.array([num(e) for e in mol_df[lig]])
-
+    
     # post-processing: as you wish
     scipy.io.savemat('XeYt_%s.mat'%nam,mat)
