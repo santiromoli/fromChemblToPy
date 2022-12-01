@@ -38,6 +38,6 @@ for chembl,nam in tasks:
         mol_df[lig] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x[lig])
         mat[lig] = np.array([num(e) for e in mol_df[lig]])
     #add the IC50 value to the array
-    mat["IC50_value"] = ic50_values_df['value']
+    mat["IC50_value"] = np.array([num(e) for e in ic50_values_df['value']])
     # post-processing: as you wish
     scipy.io.savemat('XeYt_%s.mat'%nam,mat)
