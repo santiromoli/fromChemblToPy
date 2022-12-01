@@ -20,7 +20,7 @@ for chembl,nam in tasks:
                                             standar_relation__iexact = '=', assay_type = 'B'
                                             ).only(['molecule_chembl_id', 'ic50_value'])
     act_df = pd.DataFrame(activities)
-    act_df = act_df.query("molecule_chembl_id == 'CHEMBL3701238'") #Since the API does not support the attribute 'exclude'
+    act_df = act_df.query("molecule_chembl_id != 'CHEMBL3701238'") #Since the API does not support the attribute 'exclude'
     ic50_values_df = act_df[['molecule_chembl_id','value']]
 
     # find the list of compounds that are within the act_df dataframe
