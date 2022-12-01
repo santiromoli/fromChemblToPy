@@ -28,7 +28,8 @@ for chembl,nam in tasks:
     molecules = new_client.molecule.filter(molecule_chembl_id__in = cmpd_chembl_ids  
                                            ).only([ 'molecule_chembl_id', 'molecule_properties'])
     mol_df = pd.DataFrame(molecules)
-
+    #re-arranging the length of mol_df
+    mol_df = ic50_values_df.merge(mol_df,how='right', left_on='molecule_chembl_id', right_on='molecule_chembl_id')
     # convert nested cells (ie those containing a dictionary) to individual columns in the dataframe
     ligands = ['qed_weighted', 'hba', 'hbd', 'psa', 'cx_most_apka', 'cx_most_bpka']
     mat = {}
@@ -36,6 +37,7 @@ for chembl,nam in tasks:
     for lig in ligands:
         mol_df[lig] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x[lig])
         mat[lig] = np.array([num(e) for e in mol_df[lig]])
-
+    #add the IC50 value to the array
+    mat["IC50_value"] = ic50_values_df['value']
     # post-processing: as you wish
     scipy.io.savemat('XeYt_%s.mat'%nam,mat)
