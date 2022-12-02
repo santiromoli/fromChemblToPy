@@ -78,6 +78,7 @@ for mcid,name in targets:
         data.append( [num(e) for e in mol_df[lig]] )
     mat[name] = np.array(data)
     mat[name+"_IC50_value"] = np.array([num(e) for e in ic50_values_df['value']])
+    print(ic50_values_df)
     
 # save data to disk
 scipy.io.savemat('XeYt.mat',mat)
