@@ -67,6 +67,7 @@ for mcid,name in targets:
     molecules = new_client.molecule.filter(molecule_chembl_id__in = cmpd_chembl_ids  
                                            ).only([ 'molecule_chembl_id', 'molecule_properties'])
     mol_df = pd.DataFrame(molecules)
+    # re-arranging the length of mol_df
     mol_df = ic50_values_df.merge(mol_df, how='right',
                                   left_on='molecule_chembl_id',
                                   right_on='molecule_chembl_id')
@@ -77,6 +78,7 @@ for mcid,name in targets:
         mol_df[lig] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x[lig])
         data.append( [num(e) for e in mol_df[lig]] )
     mat[name] = np.array(data)
+    #add the IC50 value to the array
     mat[name+"_IC50_value"] = np.array([num(e) for e in ic50_values_df['value']])
     print(ic50_values_df)
     
