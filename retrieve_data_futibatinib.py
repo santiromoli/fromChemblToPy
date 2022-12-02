@@ -29,6 +29,8 @@ import pandas as pd
 import scipy.io
 import numpy as np
 
+chem = ('CHEMBL3701238', 'FUTIBATINIB')
+
 # 9 off-targets and 4 targets
 targets = [('CHEMBL1868', 'VEGFR1'), ('CHEMBL3712907', 'TMIGD3'),
            ('CHEMBL278', 'ITGA4'),   ('CHEMBL4718', 'MNKI'),
@@ -44,19 +46,18 @@ ligand_names = ['QED Weighted', 'HBA', 'HBD', 'PSA', 'CX Acidic pKa', 'CX Basic 
 num = lambda s: np.nan if s is None else float(s)  # conversion
 mat = {'ligands': np.array(ligand_names)}
 
-for chembl,name in targets:
+for mcid,name in targets:
 
     print("Query target %s"%name)
-
     # 1) query activity API
-    activities = new_client.activity.filter(target_chembl_id__in = [chembl], pchembl_value__isnull = False, 
+    activities = new_client.activity.filter(target_chembl_id__in = [mcid], pchembl_value__isnull = False, 
                                             standard_type = "IC50", standard_units = 'nM', IC50_value__lte = 10000, 
                                             standar_relation__iexact = '=', assay_type = 'B'
                                             ).only(['molecule_chembl_id', 'ic50_value'])
     act_df = pd.DataFrame(activities)
 
     # the API does not support the attribute 'exclude'
-    act_df = act_df.query("molecule_chembl_id != 'CHEMBL3701238'")
+    act_df = act_df.query("molecule_chembl_id != '%s'"%chem[0])
     ic50_values_df = act_df[['molecule_chembl_id','value']]
 
     # find the list of compounds that are within the act_df dataframe
@@ -66,6 +67,9 @@ for chembl,name in targets:
     molecules = new_client.molecule.filter(molecule_chembl_id__in = cmpd_chembl_ids  
                                            ).only([ 'molecule_chembl_id', 'molecule_properties'])
     mol_df = pd.DataFrame(molecules)
+    mol_df = ic50_values_df.merge(mol_df, how='right',
+                                  left_on='molecule_chembl_id',
+                                  right_on='molecule_chembl_id')
 
     # convert nested cells (i.e. those containing a dictionary) to individual columns in the dataframe
     data = []
@@ -73,6 +77,7 @@ for chembl,name in targets:
         mol_df[lig] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x[lig])
         data.append( [num(e) for e in mol_df[lig]] )
     mat[name] = np.array(data)
+    mat[name+"_IC50_value"] = np.array([num(e) for e in ic50_values_df['value']])
     
 # save data to disk
 scipy.io.savemat('XeYt.mat',mat)
