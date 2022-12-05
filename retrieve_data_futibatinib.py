@@ -3,7 +3,7 @@ database: ChEMBL
 drug: futibatinib aka TAS-120 sold as Lytgobi (anti bile duct cancer drug)
 receptors (proteins of the membrane that interact with the surroundings)
   target receptors: FGFR1, FGFR2, FGFR3, FGFR4
-  off-target receptors: VEGFR1, TMIGD3, ITGA4, MNKI, PIK3CD, ROS1, CA9, CTSK, erb2B
+  off-target receptors: VEGFR1, TMIGD3, ITGA4, MNKI, PIK3CD, ROS1, CA9, CTSK, erbB2
   ligands: qed_weighted, cx_most_apka, cx_most_bpka, hba, hbd, psa
 
 # In this second implementation we will add to the training datasets the information
@@ -37,7 +37,7 @@ targets = [('CHEMBL1868', 'VEGFR1'), ('CHEMBL3712907', 'TMIGD3'),
            ('CHEMBL278', 'ITGA4'),   ('CHEMBL4718', 'MNKI'),
            ('CHEMBL3130', 'PIK3CD'), ('CHEMBL5568', 'ROS1'),
            ('CHEMBL3594', 'CA9'),    ('CHEMBL268', 'CTSK'),
-           ('CHEMBL1824', 'erb2B'),
+           ('CHEMBL1824', 'erbB2'),
            ('CHEMBL3650', 'FGFR1'),  ('CHEMBL4142', 'FGFR2'),
            ('CHEMBL2742', 'FGFR3'),  ('CHEMBL3973', 'FGFR4')
            ]
