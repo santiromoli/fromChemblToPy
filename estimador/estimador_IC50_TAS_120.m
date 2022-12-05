@@ -1,5 +1,5 @@
 % run startup.m prior
-% activity estimator for TAS-120
+% activity estimator for TAS-120 against erbB-2
 clear all, close all
 clc
 
@@ -9,29 +9,23 @@ load Xt.txt        %Xtraining --> ligands properties: QED, CX Acidic pKa,	CX Bas
 load yt.txt        %Ytraining --> IC50
 load Xtest.txt     %TAS-120's properties
 
-%retardo = 1; %defino el retardo
+%retardo = 1; %delay
 
-%xd = delay(xent,retardo);           %calculo los vectores retardados
+%xd = delay(xent,retardo);           %if desired
 %xd2 = delay(xd,retardo);
 
 startup      %call the GPML toolbox
-
 meanfunc = {@meanZero}; %this function has not hyp.mean
-
 %feval(covfunc{:}) % how many hyperparametrs has meanfunc, covfunc or likfunc
 SE = {@covSEard};
 L = rand(6,1); sf = 2; hypSE = log([L;sf]);
-
 LIN = {'covLINard'};
 L = rand(6,1); hypLIN = (L);
-
 CONS = {@covConst};
 sf = 2;  hypCONS = log(sf); %hypCONS = 0;
-
 NO = {'covNoise'};
 sn = .2;  hypNO = log(sn); %hypNO = 0;
-
-covfunc = {'covSum',{SE,NO,LIN,CONS}};      %definition of covariance function
+ovfunc = {'covSum',{SE,NO,LIN,CONS}};      %definition of covariance function
 hyp.cov = [hypSE;hypNO;hypLIN;hypCONS];
 
 %feval(likfunc{:})
@@ -54,22 +48,3 @@ load Xtest.txt
 [m s2] = gp(X, @infExact, meanfunc, covfunc, likfunc, Xt, yt, Xtest);
 
 m
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
