@@ -1,13 +1,14 @@
 """ Query the ChEMBL API.
 database: ChEMBL
-drug: futibatinib = TAS-120
-receptors (proteins of the membrane that interact with the surrondings)
-  target: FGFR1, FGFR2, FGFR3, FGFR4
-  off-target: VEGFR1, TMIGD3, ITGA4, MNKI, PIK3CD, ROS1, CA9, CTSK, erb2B
+drug: futibatinib aka TAS-120 sold as Lytgobi (anti bile duct cancer drug)
+receptors (proteins of the membrane that interact with the surroundings)
+  target receptors: FGFR1, FGFR2, FGFR3, FGFR4
+  off-target receptors: VEGFR1, TMIGD3, ITGA4, MNKI, PIK3CD, ROS1, CA9, CTSK, erb2B
   ligands: qed_weighted, cx_most_apka, cx_most_bpka, hba, hbd, psa
 
-# This script gets information from the ChEMBL API. In this second implementation we will add to the training datasets the information
-# of the test ligand, TAS-120, in order to compare the predictions. So, we only have to add four targets (FGFR1-4) that are binded by TAS-120,
+# In this second implementation we will add to the training datasets the information
+# of the test ligand, TAS-120, in order to compare the predictions. So, we only have to add four targets (FGFR1-4) that are 
+binded by TAS-120,
 # taking care not to include among them the TAS-120.
 
 strength: IC50 (how much is needed for inhibition)
@@ -67,7 +68,7 @@ for mcid,name in targets:
     molecules = new_client.molecule.filter(molecule_chembl_id__in = cmpd_chembl_ids  
                                            ).only([ 'molecule_chembl_id', 'molecule_properties'])
     mol_df = pd.DataFrame(molecules)
-    # re-arranging the length of mol_df
+    # re-arrange the length of mol_df
     mol_df = ic50_values_df.merge(mol_df, how='right',
                                   left_on='molecule_chembl_id',
                                   right_on='molecule_chembl_id')
@@ -78,8 +79,9 @@ for mcid,name in targets:
         mol_df[lig] = mol_df.loc[ mol_df['molecule_properties'].notnull(), 'molecule_properties'].apply(lambda x: x[lig])
         data.append( [num(e) for e in mol_df[lig]] )
     mat[name] = np.array(data)
-    #add the IC50 value to the array
-    mat[name+"_IC50_value"] = np.array([num(e) for e in ic50_values_df['value']])
+
+    # add the IC50 value to the array
+    mat[name+"_IC50"] = np.array([num(e) for e in ic50_values_df['value']])
     print(ic50_values_df)
     
 # save data to disk
