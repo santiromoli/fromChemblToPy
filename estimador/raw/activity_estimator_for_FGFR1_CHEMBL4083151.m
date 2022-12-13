@@ -1,35 +1,39 @@
-#Activity estimator for FGFR-1 - CHEMBL4083151
+%Activity estimator for FGFR-1 - CHEMBL4083151
 
-clear all, clc
+clear all
+clc
 
-#build the regressors
+%% build the regressors
 
-load Xt_FGFR11.txt        #Xtraining --> ligands properties: QED, CX Acidic pKa,	CX Basic pKa,	HBA,	HBD,	PSA
-load yt_FGFR11.txt        #Ytraining --> IC50
+load Xt_FGFR11.txt        %Xtraining --> ligands properties: ['QED Weighted', 'HBA', 'HBD', 'PSA', 'CX Acidic pKa', 'CX Basic pKa']
+load yt_FGFR11.txt        %Ytraining --> IC50
 
-#remove all NaN inputs
 xtotal = [Xt_FGFR11, yt_FGFR11];
 xtotal = xtotal(all(~isnan(xtotal),2),:);
 
-Xt = [xtotal(:,1) xtotal(:,2) xtotal(:,3) xtotal(:,4) xtotal(:,5) xtotal(:,6) xtotal(:,1).*xtotal(:,6)];
+Xt = [xtotal(:,1) xtotal(:,2) xtotal(:,3) xtotal(:,4) xtotal(:,5) xtotal(:,6) xtotal(:,1).*xtotal(:,4)];
 yt = [xtotal(:,7)];
-#we work in the power domain in order to reduce squared distance of yt
-yt = yt.^(1/14); 
+yt = yt.^(1/14); % work in the power domain
 
-startup      #call the GPML toolbox
+startup      %call the GPML toolbox
 
-cf = @covSEard; ell = 100; sf = 5*std(yt); hyp.cov = [log(ell)*ones(7,1); log(sf)];
+#feval(@covSEard) e.g. to ask for the number of hyp
+SE = {@covSEard}; ell = 100; sf = 5*std(yt); hypSE = [log(ell)*ones(7,1); log(sf)];
+NO = {'covNoise'}; sf = 5*std(yt); hypNO = log(sf);                                    
+LIN = {'covLINard'}; ell = 100; hypLIN = [log(ell)*ones(7,1)];
+CONS = {@covConst}; sf = 5*std(yt); hypCONS = log(sf);
+cf = {'covSum',{SE,NO,LIN,CONS}}; hyp.cov = [hypSE;hypNO;hypLIN;hypCONS];
 mf = {@meanSum, {@meanConst, @meanLinear}}; c = 0.0; hyp.mean = [c; zeros(7,1)];
 lf = @likGauss; sn = std(yt); hyp.lik = log(sn);
 
-#train the GPML (likGauss, meanZero)
-[X, fX, i] = minimize(hyp, @gp, -100, @infExact, mf, cf, lf, Xt, yt);
-likelihood = X.lik % -1.5151 | -1.5165
+% train the GPML (likGauss, meanZero)
+[X, fX, i] = minimize(hyp, @gp, -1500, @infExact, mf, cf, lf, Xt, yt);
+likelihood = X.lik
 hyps = [X.cov];
 
-#infer the IC50 value of CHEMBL4083151-FGFR1
+%Infer the IC50 value of CHEMBL4083151-FGFR1
 
-load Xtest.txt                  #CHEMBL4083151's properties
+load Xtest.txt                  %CHEMBL4083151's properties
 
 [m s2] = gp(X, @infExact, mf, cf, lf, Xt, yt, Xtest); #1.3
 
