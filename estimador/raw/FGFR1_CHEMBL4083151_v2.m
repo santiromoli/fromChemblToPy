@@ -36,14 +36,29 @@ load Xtest.txt                  %CHEMBL4083151's properties
 
 [m s2] = gp(X, @infExact, mf, cf, lf, Xt, yt, Xtest); #1.3
 
-m^(14)
+ii = 1;
+ytest(ii) = m^(14);
+re = abs(1.3/ytest - 1);
 
-#hyp.cov = hyps;                   #re-initialize the optimization
+##Loop
 
-#[X, fX, i] = minimize(hyp, @gp, -100, @infExact, mf, cf, lf, Xt, yt);
-#likelihood = X.lik
-#hyps = [X.cov];
+hyp.cov = hyps;
+[X, fX, i] = minimize(hyp, @gp, -100, @infExact, mf, cf, lf, Xt, yt);
+likelihood = X.lik
+hyps = [X.cov];
+[m s2] = gp(X, @infExact, mf, cf, lf, Xt, yt, Xtest); #1.3
+ytest(ii+1) = m^(14);
 
-#[m s2] = gp(X, @infExact, mf, cf, lf, Xt, yt, Xtest); #1.3
-#m^(14)
+while abs(ytest(ii)-ytest(ii+1)) > .1
+  hyp.cov = hyps;
+  [X, fX, i] = minimize(hyp, @gp, -100, @infExact, mf, cf, lf, Xt, yt);
+  likelihood = X.lik;
+  hyps = [X.cov];
+  [m s2] = gp(X, @infExact, mf, cf, lf, Xt, yt, Xtest); #1.3
+  ii = ii+1;
+  ytest(ii+1) = m^(14);
+  re = abs(1.3/ytest(ii+1) - 1)
+endwhile
+
+
 
