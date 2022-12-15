@@ -49,7 +49,7 @@ hyps(ii+1,:) = [X.cov];
 [m s2] = gp(X, @infExact, mf, cf, lf, Xt, yt, Xtest); #1.3
 ytest(ii+1) = m^(14);
 
-while abs(ytest(ii)-ytest(ii+1)) > .1
+while abs(ytest(ii)-ytest(ii+1)) > .01
   hyp.cov = hyps(ii+1,:);
   [X, fX, i] = minimize(hyp, @gp, -100, @infExact, mf, cf, lf, Xt, yt);
   likelihood = X.lik;
