@@ -15,7 +15,9 @@ yt = yt.^(1/14); % work in the power domain
 
 startup      %call the GPML toolbox
 
-cf = @covSEard; ell = 100; sf = 5*std(yt); hyp.cov = [log(ell)*ones(4,1); log(sf)];
+SE = {@covSEard}; ell = 100; sf = 5*std(yt); hypSE = [log(ell)*ones(4,1); log(sf)];
+CONS = {@covConst}; sf = 5*std(yt); hypCONS = log(sf);
+cf = {'covSum',{SE,CONS}}; hyp.cov = [hypSE;hypCONS];
 mf = {@meanSum, {@meanConst, @meanLinear}}; c = 0.0; hyp.mean = [c; zeros(4,1)];
 lf = @likGauss; sn = std(yt); hyp.lik = log(sn);
 
