@@ -12,7 +12,7 @@ Xt = (abs([xtotal(:,7) xtotal(:,8) xtotal(:,9) xtotal(:,10) xtotal(:,11) xtotal(
 yt = ([xtotal(:,14)]).^(1/14); % work in the power domain
 
 startup      %call the GPML toolbox
-#load hypse.txt
+
 se = {@covSEard}; #ell = rand(7,1); sf = 10*std(yt); hypse = [log(ell); log(sf)];
 cons = {@covConst}; #sf = 5*std(yt); hypcons = log(sf);
 load hypsecons.txt, hyp.cov = hypsecons;
