@@ -8,17 +8,14 @@ load yt_todo.txt        #Ytraining --> IC50
 xtotal = [Xt_todo, yt_todo];
 xtotal = xtotal(all(~isnan(xtotal),2),:); #take off all the NaN
 
-Xt = [xtotal(:,7) xtotal(:,8) xtotal(:,9) xtotal(:,10) xtotal(:,11) xtotal(:,12) xtotal(:,13)];
-Xt = (abs(Xt)).^(1/14);
-yt = [xtotal(:,14)];
-yt = yt.^(1/14); % work in the power domain
+Xt = (abs([xtotal(:,7) xtotal(:,8) xtotal(:,9) xtotal(:,10) xtotal(:,11) xtotal(:,12) xtotal(:,13)])).^(1/14);
+yt = ([xtotal(:,14)]).^(1/14); % work in the power domain
 
 startup      %call the GPML toolbox
 #load hypse.txt
-se = {@covSEard}; ell = rand(7,1); #sf = 10*std(yt); hypse = [log(ell); log(sf)];
-cons = {@covConst}; sf = 5*std(yt); #hypcons = log(sf);
-load hypsecons.txt
-hyp.cov = hypsecons;
+se = {@covSEard}; #ell = rand(7,1); sf = 10*std(yt); hypse = [log(ell); log(sf)];
+cons = {@covConst}; #sf = 5*std(yt); hypcons = log(sf);
+load hypsecons.txt, hyp.cov = hypsecons;
 cf = {'covSum',{se,cons}}; #hyp.cov = [hypse;hypcons];
 mf = {@meanSum, {@meanConst, @meanLinear}}; c = 0.0; hyp.mean = [c; zeros(7,1)];
 lf = @likGauss; sn = std(yt); hyp.lik = log(sn);
