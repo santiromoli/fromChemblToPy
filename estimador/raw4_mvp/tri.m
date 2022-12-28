@@ -15,10 +15,11 @@ yt = yt.^(1/14); % work in the power domain
 
 startup      %call the GPML toolbox
 #load hypse.txt
-se = {@covSEard}; ell = rand(7,1); sf = 10*std(yt); hypse = [log(ell); log(sf)];
-cons = {@covConst}; sf = 5*std(yt); hypcons = log(sf);
-
-cf = {'covSum',{se,cons}}; hyp.cov = [hypse;hypcons];
+se = {@covSEard}; ell = rand(7,1); #sf = 10*std(yt); hypse = [log(ell); log(sf)];
+cons = {@covConst}; sf = 5*std(yt); #hypcons = log(sf);
+load hypsecons.txt
+hyp.cov = hypsecons;
+cf = {'covSum',{se,cons}}; #hyp.cov = [hypse;hypcons];
 mf = {@meanSum, {@meanConst, @meanLinear}}; c = 0.0; hyp.mean = [c; zeros(7,1)];
 lf = @likGauss; sn = std(yt); hyp.lik = log(sn);
 
