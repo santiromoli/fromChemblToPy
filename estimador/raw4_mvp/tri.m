@@ -1,3 +1,5 @@
+#activity estimator to infer the IC50 value of CHEMBL4083151-FGFR1
+
 clear all, clc
 
 #build the regressors                     
